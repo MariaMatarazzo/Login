@@ -16,6 +16,16 @@ public class LoginService {
 	    public LoginService(LoginRepository repository) {
 	        this.repository = repository;
 	    }
+	    
+	    public Login authenticate(String username, String password) {
+	    	Login user = repository.findByUsername(username);
+	    	
+	    	if(user !=null && user.getPassword().equals(password)) {
+	    		return user;
+	    	}
+	    	return null;
+	    	
+	    }
 
 	    public List<Login> listar() { return repository.findAll(); }
 	    public Login salvar(Login login) { return repository.save(login); }

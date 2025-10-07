@@ -2,6 +2,8 @@ package com.Login.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +16,25 @@ import com.Login.entities.Login;
 import com.Login.service.LoginService;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/users")
 public class LoginController {
 
 	    private final LoginService service;
+	    
+	    @PostMapping("/auth")
+	    public ResponseEntity<Login> authenticate(@RequestBody Login loginDetails) {
+	        Login authenticatedUser = service.authenticate(loginDetails.getUsername(), loginDetails.getPassword());
+	    
+
+	    if (authenticatedUser != null) {
+	        // Retorna 200 OK com os dados do usuário (sem a senha) se a autenticação for bem-sucedida
+	        authenticatedUser.setPassword(null); // Nunca retorne a senha para o front-end
+	        return ResponseEntity.ok(authenticatedUser);
+	    }
+	    // Retorna 401 Unauthorized se as credenciais estiverem incorretas
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
+	    
 	    public LoginController(LoginService service) {
 	        this.service = service;
 	    }
